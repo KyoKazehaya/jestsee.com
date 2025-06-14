@@ -12,7 +12,7 @@ export interface DockProps {
 }
 
 const DEFAULT_MAGNIFICATION = 60
-const DEFAULT_DISTANCE = 140
+const DEFAULT_DISTANCE = 280
 
 const Dock = React.forwardRef<HTMLUListElement, DockProps>(
   (

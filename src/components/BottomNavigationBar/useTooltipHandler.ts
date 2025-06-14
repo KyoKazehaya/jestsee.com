@@ -31,9 +31,7 @@ export const useTooltipHandler = (
     const nav = navRef?.current
     if (!nav) return
 
-    const navSize = nav.getBoundingClientRect().width
     nav.style.opacity = '1'
-    nav.style.setProperty('--width', navSize.toString())
 
     const teardown = () => {
       nav.removeEventListener('pointermove', track)
