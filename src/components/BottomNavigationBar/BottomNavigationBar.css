@@ -103,7 +103,7 @@
 }
 
 .tip {
-  translate: calc(-125% + (var(--tip-x) * 1px));
+  translate: calc(-125% + ((var(--tip-x) - var(--tip-x-offset, 0)) * 1px));
   bottom: 100px;
 }
 

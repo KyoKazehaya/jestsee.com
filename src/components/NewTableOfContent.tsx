@@ -1,5 +1,5 @@
 import { Portal } from '@radix-ui/react-portal'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, type HTMLMotionProps } from 'framer-motion'
 import { cn, waitForElementById } from '@/lib/utils'
 
@@ -37,11 +37,23 @@ function MotionDiv({
   ...props
 }: Omit<HTMLMotionProps<'div'>, 'ref'>) {
   const [shouldUnmount, setShouldUnmount] = useState(false)
+  const divRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     document.addEventListener('astro:before-preparation', () => {
       setShouldUnmount(true)
     })
+
+    setTimeout(() => {
+      if (divRef.current) {
+        const rect = divRef.current.getBoundingClientRect()
+
+        document.documentElement.style.setProperty(
+          '--tip-x-offset',
+          (rect.width / 2).toString()
+        )
+      }
+    }, 500) // wait for the enter animation to finish
 
     return () => {
       document.removeEventListener('astro:before-preparation', () => {
@@ -54,6 +66,7 @@ function MotionDiv({
     <AnimatePresence>
       {!shouldUnmount && (
         <motion.div
+          ref={divRef}
           initial={{ width: 0, opacity: 0 }}
           animate={{
             width: 120,
