@@ -70,3 +70,34 @@ export const catchError = async <T>(
     .then((data) => [undefined, data] as [undefined, T])
     .catch((error) => [error])
 }
+
+export function waitForElementById(
+  id: string,
+  timeout = 3000
+): Promise<HTMLElement | null> {
+  return new Promise((resolve) => {
+    const element = document.getElementById(id)
+    if (element) {
+      return resolve(element)
+    }
+
+    const observer = new MutationObserver(() => {
+      const el = document.getElementById(id)
+      if (el) {
+        observer.disconnect()
+        clearTimeout(timer)
+        resolve(el)
+      }
+    })
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    })
+
+    const timer = setTimeout(() => {
+      observer.disconnect()
+      resolve(null) // return null if not found within timebox
+    }, timeout)
+  })
+}

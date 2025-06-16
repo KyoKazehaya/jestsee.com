@@ -60,9 +60,10 @@ const Dock = React.forwardRef<HTMLUListElement, DockProps>(
           }
           document.addEventListener('mousemove', mouseEventHandler)
         }}
-        {...props}
         className={cn(
-          'supports-backdrop-blur:bg-black/10 mx-auto flex h-[58px] w-max rounded-full border border-shark-950 bg-black/75 p-2 backdrop-blur-lg',
+          'supports-backdrop-blur:bg-black/10 backdrop-blur-lg',
+          'mx-auto flex h-[58px] w-max overflow-hidden rounded-full',
+          'border border-shark-950 bg-black/75 p-2',
           {
             'items-start': direction === 'top',
             'items-center': direction === 'middle',
@@ -70,6 +71,7 @@ const Dock = React.forwardRef<HTMLUListElement, DockProps>(
           },
           className
         )}
+        {...props}
       >
         {renderChildren()}
       </motion.ul>

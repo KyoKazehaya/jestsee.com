@@ -14,6 +14,7 @@ import { BASE_URL } from '@/lib/baseUrl'
 import { formatDateByTimeZone } from '@/lib/utils'
 
 import BaseLayout from '../BaseLayout.astro'
+import NewTableOfContent from '@/components/NewTableOfContent'
 
 interface Props extends InferEntrySchema<'blog'> {
   headings: MarkdownHeading[]
@@ -42,6 +43,7 @@ const {
     type='article'
     slot='seo'
   />
+  <NewTableOfContent client:only='react' />
   <slot name='head' slot='head' />
   <!-- <TopOverlay /> -->
   <ScrollProgressBar
