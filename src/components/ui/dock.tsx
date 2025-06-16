@@ -92,6 +92,7 @@ export interface DockIconProps
   props?: PropsWithChildren
   href?: string
   onClick?: () => void
+  name: string
 }
 
 const DockIcon = ({
@@ -101,6 +102,7 @@ const DockIcon = ({
   mouseX,
   className,
   children,
+  name,
   ...props
 }: DockIconProps) => {
   const ref = useRef<HTMLAnchorElement>(null)
@@ -129,7 +131,7 @@ const DockIcon = ({
   }
 
   return (
-    <li>
+    <li style={{ viewTransitionName: name }}>
       <motion.a
         ref={ref}
         style={getWidth()}

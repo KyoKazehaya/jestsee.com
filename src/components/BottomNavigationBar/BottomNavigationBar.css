@@ -22,12 +22,29 @@
 }
 
 .nav {
-  anchor-name: --my-nav;
   --bottom-nav-bar-offset: 32px;
+
+  anchor-name: --my-nav;
   view-transition-name: --nav;
 }
 
 ::view-transition-group(--nav) {
+  z-index: 10;
+}
+
+::view-transition-group(home) {
+  z-index: 10;
+}
+::view-transition-group(projects) {
+  z-index: 10;
+}
+::view-transition-group(blog) {
+  z-index: 10;
+}
+::view-transition-group(about) {
+  z-index: 10;
+}
+::view-transition-group(bookmarks) {
   z-index: 10;
 }
 
@@ -94,7 +111,7 @@
   .tip {
     left: anchor(left);
     bottom: calc(anchor(top) + 1rem);
-    translate: calc(-50% + (var(--tip-x) * 1px));
+    translate: calc(-25% + (var(--tip-x) * 1px));
     /* translate: calc(-50% + (var(--tip-x) * 1px)) calc(var(--tip-y) * 1px + -50%); */
   }
 }
@@ -173,7 +190,8 @@
     opacity calc(var(--speed) * 1s) var(--ease);
 }
 
-:root:has(.nav ul:is(:hover)) {
+/* exclude first child (leading) */
+:root:has(.nav ul > li:not(:first-child):hover) {
   .tip {
     --show: 1;
     filter: blur(0);

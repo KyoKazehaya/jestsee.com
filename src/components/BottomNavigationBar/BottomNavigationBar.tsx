@@ -17,29 +17,34 @@ export const bottomNavigationItems = [
   {
     name: 'Hi 👋',
     icon: HandWaving,
-    href: '/'
+    href: '/',
+    viewTransitionName: 'home'
   },
   {
     name: 'Projects',
     icon: Briefcase,
-    href: '/projects'
+    href: '/projects',
+    viewTransitionName: 'projects'
   },
   {
     name: 'Blog',
     icon: ChatTeardropDots,
-    href: '/blog'
+    href: '/blog',
+    viewTransitionName: 'blog'
   },
   {
     name: 'About',
     icon: HandPalm,
-    href: '/about'
+    href: '/about',
+    viewTransitionName: 'about'
   },
   {
     name: 'Bookmarks',
     icon: Bookmarks,
-    href: '/bookmarks'
+    href: '/bookmarks',
+    viewTransitionName: 'bookmarks'
   }
-]
+] as const
 
 const BottomNavigationBar = () => {
   const [currentPath, setCurrentPath] = useState('')
@@ -87,9 +92,11 @@ const BottomNavigationBar = () => {
         style={{ bottom: 'var(--bottom-nav-bar-offset)' }}
       >
         <Dock direction='middle'>
-          {bottomNavigationItems.map(({ name, icon: Icon, href }) => (
+          <li id='bottom-nav-bar-leading'></li>
+          {bottomNavigationItems.map(({ name, icon: Icon, href, ...item }) => (
             <DockIcon
               key={name}
+              name={item.viewTransitionName}
               href={href}
               onClick={() => setCurrentPath(href)}
               aria-label={name}
@@ -104,6 +111,7 @@ const BottomNavigationBar = () => {
       </nav>
       <div className='tip' aria-hidden='true'>
         <div className='tip__track'>
+          <div />
           {bottomNavigationItems.map(({ name }) => (
             <div key={name}>{name}</div>
           ))}
