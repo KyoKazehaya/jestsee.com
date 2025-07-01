@@ -58,6 +58,10 @@
   }
 }
 
+body.disable-scroll .tip {
+  display: none;
+}
+
 .tip {
   position-anchor: --my-nav;
   position: fixed;
