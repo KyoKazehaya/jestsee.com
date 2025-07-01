@@ -81,34 +81,43 @@ const BottomNavigationBar = () => {
 
   return (
     <>
-      <nav
+      <div
         ref={navRef}
-        onPointerMove={() => {
-          // remove the css variable which force tooltip to be hidden
-          const tip = document.querySelector<HTMLDivElement>('.tip')
-          tip?.style.removeProperty('--show')
-        }}
         className={cn('nav', 'fixed z-10')}
         style={{ bottom: 'var(--bottom-nav-bar-offset)' }}
       >
-        <Dock direction='middle'>
-          <li id='bottom-nav-bar-leading'></li>
-          {bottomNavigationItems.map(({ name, icon: Icon, href, ...item }) => (
-            <DockIcon
-              key={name}
-              name={item.viewTransitionName}
-              href={href}
-              onClick={() => setCurrentPath(href)}
-              aria-label={name}
-            >
-              <Icon className='size-6' />
-              {firstSegment === href && (
-                <div className='absolute bottom-2 size-1 rounded-full bg-emerald-300'></div>
-              )}
-            </DockIcon>
-          ))}
-        </Dock>
-      </nav>
+        <div
+          id='bottom-nav-bar-upper'
+          className='absolute bottom-[72px] w-full'
+        ></div>
+        <nav
+          onPointerMove={() => {
+            // remove the css variable which force tooltip to be hidden
+            const tip = document.querySelector<HTMLDivElement>('.tip')
+            tip?.style.removeProperty('--show')
+          }}
+        >
+          <Dock direction='middle'>
+            <li id='bottom-nav-bar-leading'></li>
+            {bottomNavigationItems.map(
+              ({ name, icon: Icon, href, ...item }) => (
+                <DockIcon
+                  key={name}
+                  name={item.viewTransitionName}
+                  href={href}
+                  onClick={() => setCurrentPath(href)}
+                  aria-label={name}
+                >
+                  <Icon className='size-6' />
+                  {firstSegment === href && (
+                    <div className='absolute bottom-2 size-1 rounded-full bg-emerald-300'></div>
+                  )}
+                </DockIcon>
+              )
+            )}
+          </Dock>
+        </nav>
+      </div>
       <div className='tip' aria-hidden='true'>
         <div className='tip__track'>
           <div />

@@ -8,7 +8,6 @@ import { ArrowOutward } from '@/components/icons/ArrowOutward'
 import Image from '@/components/Image'
 import Link, { LinkArticle } from '@/components/Link'
 import SEO from '@/components/SEO.astro'
-import TableOfContent from '@/components/TableOfContent'
 import ScrollProgressBar from '@/components/ui/scroll-progress-bar'
 import { BASE_URL } from '@/lib/baseUrl'
 import { formatDateByTimeZone } from '@/lib/utils'
@@ -35,7 +34,7 @@ const {
 } = Astro.props
 ---
 
-<BaseLayout class='!max-w-[1024px]'>
+<BaseLayout class='!max-w-[840px]'>
   <SEO
     title={title}
     description={description}
@@ -43,21 +42,17 @@ const {
     type='article'
     slot='seo'
   />
-  <NewTableOfContent client:only='react' />
+  <NewTableOfContent client:only='react' headings={headings} />
   <slot name='head' slot='head' />
   <!-- <TopOverlay /> -->
-  <ScrollProgressBar
-    className='bg-[var(--projectAccentColor)]'
-    targetId='article'
-    client:only='react'
-  />
+  <ScrollProgressBar targetId='article' client:only='react' strokeSize={2} />
 
   <Image
     src={heroImage}
     alt={title}
     title={title}
     align='center'
-    wrapperProps={{ class: 'max-w-[928px] lg:mt-12 lg:rounded-md' }}
+    wrapperProps={{ class: 'max-w-[756px] lg:mt-12 lg:rounded-md' }}
     class='aspect-[2.5] w-full xs:aspect-[3.25]'
     inferSize
     ambientMode
@@ -115,9 +110,9 @@ const {
       }
     </article>
 
-    <aside class='w-60 shrink-0 space-y-8 max-lg:hidden'>
+    <!-- <aside class='w-60 shrink-0 space-y-8 max-lg:hidden'>
       <TableOfContent headings={headings} className='sticky top-32' />
-    </aside>
+    </aside> -->
   </section>
 
   <section class='mt-16'>
