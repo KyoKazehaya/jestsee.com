@@ -86,18 +86,20 @@ const BottomNavigationBar = () => {
         className={cn('nav', 'fixed z-10')}
         style={{ bottom: 'var(--bottom-nav-bar-offset)' }}
       >
-        <div
-          id='bottom-nav-bar-upper'
-          className='absolute bottom-[72px] w-full'
-        ></div>
         <nav
           onPointerMove={() => {
             // remove the css variable which force tooltip to be hidden
             const tip = document.querySelector<HTMLDivElement>('.tip')
             tip?.style.removeProperty('--show')
           }}
+          className={cn(
+            'overflow-hidden rounded-[32px]',
+            'border border-shark-950',
+            'bg-black/75'
+          )}
         >
-          <Dock direction='middle'>
+          <div id='bottom-nav-bar-upper' className='w-full'></div>
+          <Dock>
             <li id='bottom-nav-bar-leading'></li>
             {bottomNavigationItems.map(
               ({ name, icon: Icon, href, ...item }) => (
@@ -110,7 +112,7 @@ const BottomNavigationBar = () => {
                 >
                   <Icon className='size-6' />
                   {firstSegment === href && (
-                    <div className='absolute bottom-2 size-1 rounded-full bg-emerald-300'></div>
+                    <div className='absolute bottom-0.5 size-1 rounded-full bg-emerald-300'></div>
                   )}
                 </DockIcon>
               )

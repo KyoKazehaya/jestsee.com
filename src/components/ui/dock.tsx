@@ -7,7 +7,6 @@ export interface DockProps {
   className?: string
   magnification?: number
   distance?: number
-  direction?: 'top' | 'middle' | 'bottom'
   children: React.ReactNode
 }
 
@@ -21,7 +20,6 @@ const Dock = React.forwardRef<HTMLUListElement, DockProps>(
       children,
       magnification = DEFAULT_MAGNIFICATION,
       distance = DEFAULT_DISTANCE,
-      direction = 'bottom',
       ...props
     },
     ref
@@ -41,8 +39,11 @@ const Dock = React.forwardRef<HTMLUListElement, DockProps>(
 
     return (
       <motion.ul
+        id='nav-dock'
         ref={ref}
         onMouseMove={(e) => {
+          if (document.body.classList.contains('disable-scroll')) return
+
           mouseX.set(e.pageX)
           mouseY.current = e.pageY
         }}
@@ -61,14 +62,9 @@ const Dock = React.forwardRef<HTMLUListElement, DockProps>(
           document.addEventListener('mousemove', mouseEventHandler)
         }}
         className={cn(
-          'supports-backdrop-blur:bg-black/10 backdrop-blur-lg',
-          'mx-auto flex h-[58px] w-max overflow-hidden rounded-full',
-          'border border-shark-950 bg-black/75 p-2',
-          {
-            'items-start': direction === 'top',
-            'items-center': direction === 'middle',
-            'items-end': direction === 'bottom'
-          },
+          'mx-auto w-max p-1',
+          'flex items-center',
+          'transition-all duration-300',
           className
         )}
         {...props}
@@ -136,7 +132,9 @@ const DockIcon = ({
         ref={ref}
         style={getWidth()}
         className={cn(
-          'flex aspect-square cursor-pointer items-center justify-center rounded-full',
+          'flex items-center justify-center',
+          'relative cursor-pointer rounded-full',
+          'h-10',
           className
         )}
         {...props}

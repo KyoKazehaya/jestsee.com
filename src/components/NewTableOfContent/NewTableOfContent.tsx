@@ -1,10 +1,10 @@
 import { Portal } from '@radix-ui/react-portal'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ComponentRef } from 'react'
 import { AnimatePresence, motion, type HTMLMotionProps } from 'framer-motion'
 import { cn, waitForElementById } from '@/lib/utils'
-import { ChevronUp } from '../icons/ChevronUp'
 import type { MarkdownHeading } from 'astro'
 import './NewTableOfContent.css'
+import { ChevronsUpDownIcon } from '../icons/AnimatedChevronsUpDown'
 
 interface Props {
   headings: MarkdownHeading[]
@@ -14,6 +14,8 @@ export default function NewTableOfContent({ headings }: Props) {
   const [leadingContainer, setLeadingContainer] = useState<HTMLElement>()
   const [upperContainer, setUpperContainer] = useState<HTMLElement>()
   const [showList, setShowList] = useState(false)
+
+  const iconRef = useRef<ComponentRef<typeof ChevronsUpDownIcon>>(null)
 
   const isFirefox = navigator.userAgent.toLowerCase().includes('firefox')
   const ButtonWrapper = isFirefox ? MotionButton : 'button'
@@ -36,11 +38,16 @@ export default function NewTableOfContent({ headings }: Props) {
 
   function handleToggleList() {
     setShowList((prev) => !prev)
+    const navDock = document.getElementById('nav-dock')
 
     if (showList) {
+      navDock?.classList.remove('!p-3')
+      navDock?.classList.add('delay-200')
       return document.body.classList.remove('disable-scroll')
     }
 
+    navDock?.classList.add('!p-3')
+    navDock?.classList.remove('delay-200')
     document.body.classList.add('disable-scroll')
   }
 
@@ -50,20 +57,19 @@ export default function NewTableOfContent({ headings }: Props) {
         <AnimatePresence>
           {showList && (
             <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0 }}
+              initial={{ height: 0 }}
+              animate={{ height: 'auto' }}
+              exit={{ height: 0 }}
               transition={{ type: 'spring', bounce: 0.2 }}
               className={cn(
                 'h-64 w-full origin-bottom overflow-scroll',
-                'rounded-[32px] px-8 py-4',
-                'border border-shark-950 bg-black/90',
+                'bg-zinc-900/80',
                 'table-of-content'
               )}
             >
               <ul
                 className={cn(
-                  'mt-2 space-y-1.5 text-[0.9rem] text-zinc-500',
+                  'mt-2 space-y-1.5 p-4 text-[0.9rem] text-zinc-500',
                   'scrollbar-color max-h-[480px] overflow-y-scroll'
                 )}
               >
@@ -88,6 +94,8 @@ export default function NewTableOfContent({ headings }: Props) {
         <ButtonWrapper
           type='button'
           onClick={handleToggleList}
+          onMouseEnter={() => iconRef.current?.startAnimation()}
+          onMouseLeave={() => iconRef.current?.stopAnimation()}
           className={cn(
             'group flex items-center gap-2',
             'rounded-full px-3 py-2.5',
@@ -96,13 +104,7 @@ export default function NewTableOfContent({ headings }: Props) {
           )}
         >
           <span className='whitespace-nowrap'>On this page</span>
-          <ChevronUp
-            className={cn(
-              'size-3 transition-all duration-400',
-              'group-hover:-translate-y-0.5 group-hover:scale-105',
-              { 'rotate-180': showList }
-            )}
-          />
+          <ChevronsUpDownIcon ref={iconRef} size={12} />
         </ButtonWrapper>
       </Portal>
     </>
