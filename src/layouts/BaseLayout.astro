@@ -46,6 +46,8 @@ const { class: className } = Astro.props
   }
 
   document.addEventListener('astro:page-load', () => {
+    document.getElementById('nav-dock')?.classList.remove('!p-3')
+
     // handle hash on initial load
     if (window.location.hash) {
       window.scrollTo({ top: 0, behavior: 'instant' })

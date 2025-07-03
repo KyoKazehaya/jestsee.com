@@ -10,6 +10,8 @@ interface Props {
   headings: MarkdownHeading[]
 }
 
+const MAX_HEIGHT = 256
+
 export default function NewTableOfContent({ headings }: Props) {
   const [leadingContainer, setLeadingContainer] = useState<HTMLElement>()
   const [upperContainer, setUpperContainer] = useState<HTMLElement>()
@@ -54,22 +56,23 @@ export default function NewTableOfContent({ headings }: Props) {
   return (
     <>
       <Portal container={upperContainer}>
-        <AnimatePresence>
-          {showList && (
-            <motion.div
-              initial={{ height: 0 }}
-              animate={{ height: 'auto' }}
-              exit={{ height: 0 }}
-              transition={{ type: 'spring', bounce: 0.2 }}
-              className={cn(
-                'h-64 w-full origin-bottom overflow-scroll',
-                'bg-zinc-900/80',
-                'table-of-content'
-              )}
-            >
+        <div
+          style={{
+            height: Math.min(MAX_HEIGHT, headings.length * 34),
+            transitionTimingFunction: 'cubic-bezier(0.645, 0.045, 0.355, 1)'
+          }}
+          className={cn(
+            { '!h-0': !showList },
+            'w-full overflow-hidden',
+            'table-of-content',
+            'transition-all duration-300'
+          )}
+        >
+          <div className='h-full px-2 pt-2'>
+            <div className='h-full overflow-scroll rounded-3xl bg-zinc-900/80'>
               <ul
                 className={cn(
-                  'mt-2 space-y-1.5 p-4 text-[0.9rem] text-zinc-500',
+                  'space-y-1.5 px-6 py-4 text-[0.9rem] text-zinc-400',
                   'scrollbar-color max-h-[480px] overflow-y-scroll'
                 )}
               >
@@ -86,9 +89,9 @@ export default function NewTableOfContent({ headings }: Props) {
                   )
                 })}
               </ul>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
+          </div>
+        </div>
       </Portal>
       <Portal container={leadingContainer}>
         <ButtonWrapper
@@ -185,7 +188,7 @@ const groupHeadings = (headings: MarkdownHeading[]): GroupedHeadings => {
 const Heading = ({ slug, text }: MarkdownHeading) => {
   return (
     <li>
-      <a className='hover:text-zinc-400' href={`#${slug}`}>
+      <a className='hover:text-zinc-200' href={`#${slug}`}>
         {text}
       </a>
     </li>
