@@ -5,14 +5,17 @@ import { cn, waitForElementById } from '@/lib/utils'
 import type { MarkdownHeading } from 'astro'
 import './NewTableOfContent.css'
 import { ChevronsUpDownIcon } from '../icons/AnimatedChevronsUpDown'
+import { useHotkeys } from 'react-hotkeys-hook'
 
 interface Props {
+  title: string
   headings: MarkdownHeading[]
+  tags: string[]
 }
 
 const MAX_HEIGHT = 256
 
-export default function NewTableOfContent({ headings }: Props) {
+export default function NewTableOfContent({ headings, title, tags }: Props) {
   const [leadingContainer, setLeadingContainer] = useState<HTMLElement>()
   const [upperContainer, setUpperContainer] = useState<HTMLElement>()
   const [showList, setShowList] = useState(false)
@@ -21,6 +24,8 @@ export default function NewTableOfContent({ headings }: Props) {
 
   const isFirefox = navigator.userAgent.toLowerCase().includes('firefox')
   const ButtonWrapper = isFirefox ? MotionButton : 'button'
+
+  useHotkeys('o', () => handleToggleList())
 
   useEffect(() => {
     waitForElementById('bottom-nav-bar-leading').then((element) => {
@@ -36,8 +41,6 @@ export default function NewTableOfContent({ headings }: Props) {
     })
   }, [])
 
-  const groupedHeadings = groupHeadings(headings)
-
   function handleToggleList() {
     setShowList((prev) => !prev)
     const navDock = document.getElementById('nav-dock')
@@ -45,7 +48,12 @@ export default function NewTableOfContent({ headings }: Props) {
     if (showList) {
       navDock?.classList.remove('!p-3')
       navDock?.classList.add('delay-200')
-      return document.body.classList.remove('disable-scroll')
+
+      setTimeout(() => {
+        document.body.classList.remove('disable-scroll')
+      }, 300)
+
+      return
     }
 
     navDock?.classList.add('!p-3')
@@ -59,7 +67,7 @@ export default function NewTableOfContent({ headings }: Props) {
         <div
           style={{
             height: Math.min(MAX_HEIGHT, headings.length * 34),
-            transitionTimingFunction: 'cubic-bezier(0.645, 0.045, 0.355, 1)'
+            transitionTimingFunction: 'cubic-bezier(0.25, 0.1, 0.25, 1)'
           }}
           className={cn(
             { '!h-0': !showList },
@@ -69,26 +77,18 @@ export default function NewTableOfContent({ headings }: Props) {
           )}
         >
           <div className='h-full px-2 pt-2'>
-            <div className='h-full overflow-scroll rounded-3xl bg-zinc-900/80'>
-              <ul
-                className={cn(
-                  'space-y-1.5 px-6 py-4 text-[0.9rem] text-zinc-400',
-                  'scrollbar-color max-h-[480px] overflow-y-scroll'
-                )}
-              >
-                {groupedHeadings.map((heading) => {
-                  if (!Array.isArray(heading)) {
-                    return <Heading key={heading.slug} {...heading} />
-                  }
-
-                  return (
-                    <NestedHeading
-                      key={`${heading[0].slug}-${heading[0].depth}`}
-                      headings={heading}
-                    />
-                  )
-                })}
-              </ul>
+            <div className='scrollbar-hide h-full rounded-3xl bg-[#141517]'>
+              <div className='max-w-[340px] px-4 pt-2'>
+                <div className='space-x-1.5 font-mono text-xs text-zinc-500'>
+                  {tags.map((tag) => (
+                    <span>{tag}</span>
+                  ))}
+                </div>
+                <p className='font-heading mt-2 text-xl font-semibold leading-tight text-zinc-100'>
+                  {title}
+                </p>
+              </div>
+              <HeadingsList headings={headings} />
             </div>
           </div>
         </div>
@@ -185,7 +185,7 @@ const groupHeadings = (headings: MarkdownHeading[]): GroupedHeadings => {
   }, [])
 }
 
-const Heading = ({ slug, text }: MarkdownHeading) => {
+function Heading({ slug, text }: MarkdownHeading) {
   return (
     <li>
       <a className='hover:text-zinc-200' href={`#${slug}`}>
@@ -196,11 +196,11 @@ const Heading = ({ slug, text }: MarkdownHeading) => {
 }
 
 const DEPTH_STYLE = {
-  3: 'pl-4',
-  4: 'pl-8'
+  3: 'pl-2',
+  4: 'pl-4'
 }
 
-const NestedHeading = ({ headings }: { headings: MarkdownHeading[] }) => {
+function NestedHeading({ headings }: { headings: MarkdownHeading[] }) {
   return (
     <ul
       className={cn(
@@ -211,6 +211,30 @@ const NestedHeading = ({ headings }: { headings: MarkdownHeading[] }) => {
       {headings.map((heading) => (
         <Heading key={heading.slug} {...heading} />
       ))}
+    </ul>
+  )
+}
+
+function HeadingsList({ headings }: { headings: MarkdownHeading[] }) {
+  return (
+    <ul
+      className={cn(
+        'space-y-3 p-4 pb-32 text-[0.9rem] text-zinc-400',
+        'scrollbar-hide h-full overflow-y-scroll'
+      )}
+    >
+      {groupHeadings(headings).map((heading) => {
+        if (!Array.isArray(heading)) {
+          return <Heading key={heading.slug} {...heading} />
+        }
+
+        return (
+          <NestedHeading
+            key={`${heading[0].slug}-${heading[0].depth}`}
+            headings={heading}
+          />
+        )
+      })}
     </ul>
   )
 }

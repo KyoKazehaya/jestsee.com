@@ -42,7 +42,12 @@ const {
     type='article'
     slot='seo'
   />
-  <NewTableOfContent client:only='react' headings={headings} />
+  <NewTableOfContent
+    client:only='react'
+    headings={headings}
+    title={title}
+    tags={tags}
+  />
   <slot name='head' slot='head' />
   <!-- <TopOverlay /> -->
   <ScrollProgressBar targetId='article' client:only='react' strokeSize={2} />
