@@ -82,6 +82,7 @@ const BottomNavigationBar = () => {
   return (
     <>
       <div
+        id='nav-container'
         ref={navRef}
         className={cn('nav', 'fixed z-10')}
         style={{ bottom: 'var(--bottom-nav-bar-offset)' }}
@@ -110,7 +111,7 @@ const BottomNavigationBar = () => {
                   onClick={() => setCurrentPath(href)}
                   aria-label={name}
                 >
-                  <Icon className='size-6' />
+                  <Icon className='size-5' />
                   {firstSegment === href && (
                     <div className='absolute bottom-[3px] size-[3.5px] rounded-full bg-emerald-300'></div>
                   )}

@@ -25,7 +25,21 @@ export default function NewTableOfContent({ headings, title, tags }: Props) {
   const isFirefox = navigator.userAgent.toLowerCase().includes('firefox')
   const ButtonWrapper = isFirefox ? MotionButton : 'button'
 
-  useHotkeys('o', () => handleToggleList())
+  useHotkeys('o', () => {
+    const navContainer = document.getElementById('nav-container')
+
+    if (!navContainer) return
+
+    const bottom = Number(navContainer.style.bottom.replace('px', ''))
+
+    if (bottom < 32) {
+      document.startViewTransition(() => {
+        navContainer.style.bottom = '32px'
+      })
+    }
+
+    handleToggleList()
+  })
 
   useEffect(() => {
     waitForElementById('bottom-nav-bar-leading').then((element) => {
@@ -76,9 +90,9 @@ export default function NewTableOfContent({ headings, title, tags }: Props) {
             'transition-all duration-300'
           )}
         >
-          <div className='h-full px-2 pt-2'>
+          <div className='h-full p-2'>
             <div className='scrollbar-hide h-full rounded-3xl bg-[#141517]'>
-              <div className='max-w-[340px] px-4 pt-2'>
+              <div className='max-w-[340px] px-4 pt-3'>
                 <div className='space-x-1.5 font-mono text-xs text-zinc-500'>
                   {tags.map((tag) => (
                     <span>{tag}</span>

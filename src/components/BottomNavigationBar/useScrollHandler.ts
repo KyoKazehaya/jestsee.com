@@ -16,6 +16,12 @@ const useScrollHandler = (navRef: React.RefObject<HTMLDivElement | null>) => {
     }
     if (!navRef.current) return
 
+    // Sync with external changes to bottom position
+    const currentBottom = parseInt(navRef.current.style.bottom || '0', 10)
+    if (Math.abs(currentBottom - navBottom.current) > 1) {
+      navBottom.current = currentBottom
+    }
+
     const currentScrollY = window.scrollY
     const deltaScroll = currentScrollY - previousScrollY.current
 
