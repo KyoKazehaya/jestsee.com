@@ -6,6 +6,7 @@ import type { MarkdownHeading } from 'astro'
 import './NewTableOfContent.css'
 import { ChevronsUpDownIcon } from '../icons/AnimatedChevronsUpDown'
 import { useHotkeys } from 'react-hotkeys-hook'
+import { useWaitForElement } from '../hooks/useWaitForElement'
 
 interface Props {
   title: string
@@ -16,8 +17,8 @@ interface Props {
 const MAX_HEIGHT = 256
 
 export default function NewTableOfContent({ headings, title, tags }: Props) {
-  const [leadingContainer, setLeadingContainer] = useState<HTMLElement>()
-  const [upperContainer, setUpperContainer] = useState<HTMLElement>()
+  const leadingContainer = useWaitForElement('bottom-nav-bar-leading')
+  const upperContainer = useWaitForElement('bottom-nav-bar-upper')
   const [showList, setShowList] = useState(false)
 
   const iconRef = useRef<ComponentRef<typeof ChevronsUpDownIcon>>(null)
@@ -44,17 +45,37 @@ export default function NewTableOfContent({ headings, title, tags }: Props) {
   })
 
   useEffect(() => {
-    waitForElementById('bottom-nav-bar-leading').then((element) => {
-      if (!element) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const intersecting = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
 
-      setLeadingContainer(element)
+        if (intersecting.length === 0) return
+
+        const activeId = intersecting[0].target.id
+        if (!activeId) return
+
+        // Scope to TOC links only
+        document
+          .querySelectorAll('li > a[href^="#"].current-heading')
+          .forEach((link) => link.classList.remove('current-heading'))
+
+        document
+          .querySelector(`li > a[href="#${activeId}"]`)
+          ?.classList.add('current-heading')
+      },
+      {
+        rootMargin: '-10% 0px -85% 0px',
+        threshold: [0, 0.1, 0.5]
+      }
+    )
+
+    document.querySelectorAll('h2[id], h3[id], h4[id]').forEach((heading) => {
+      observer.observe(heading)
     })
 
-    waitForElementById('bottom-nav-bar-upper').then((element) => {
-      if (!element) return
-
-      setUpperContainer(element)
-    })
+    return () => observer.disconnect()
   }, [])
 
   // Click outside to close
@@ -214,7 +235,7 @@ const MotionButton = React.forwardRef<
 })
 
 /**
- * Heading component for the table of contents
+ * Heading component
  */
 
 const DEPTH_STYLE = {
@@ -268,10 +289,30 @@ const groupHeadings = (headings: MarkdownHeading[]): GroupedHeadings => {
   }, [])
 }
 
+function handleClick(e: React.MouseEvent<HTMLAnchorElement>, slug: string) {
+  e.preventDefault()
+
+  const targetElement = document.getElementById(slug)
+  if (targetElement) {
+    targetElement.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+      inline: 'nearest'
+    })
+
+    // Update URL without triggering page jump
+    window.history.replaceState(null, '', `#${slug}`)
+  }
+}
+
 function Heading({ slug, text }: MarkdownHeading) {
   return (
     <li>
-      <a className='hover:text-zinc-200' href={`#${slug}`}>
+      <a
+        className='cursor-pointer hover:text-zinc-200'
+        href={`#${slug}`}
+        onClick={(e) => handleClick(e, slug)}
+      >
         {text}
       </a>
     </li>
