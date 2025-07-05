@@ -1,5 +1,5 @@
 import { Portal } from '@radix-ui/react-portal'
-import { useEffect, useRef, useState, type ComponentRef } from 'react'
+import React, { useEffect, useRef, useState, type ComponentRef } from 'react'
 import { AnimatePresence, motion, type HTMLMotionProps } from 'framer-motion'
 import { cn, waitForElementById } from '@/lib/utils'
 import type { MarkdownHeading } from 'astro'
@@ -21,6 +21,8 @@ export default function NewTableOfContent({ headings, title, tags }: Props) {
   const [showList, setShowList] = useState(false)
 
   const iconRef = useRef<ComponentRef<typeof ChevronsUpDownIcon>>(null)
+  const tableOfContentsRef = useRef<HTMLDivElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
 
   const isFirefox = navigator.userAgent.toLowerCase().includes('firefox')
   const ButtonWrapper = isFirefox ? MotionButton : 'button'
@@ -55,6 +57,35 @@ export default function NewTableOfContent({ headings, title, tags }: Props) {
     })
   }, [])
 
+  // Click outside to close
+  useEffect(() => {
+    if (!showList) return
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node
+
+      // Check if click is outside both the table of contents and the button
+      if (
+        tableOfContentsRef.current &&
+        buttonRef.current &&
+        !tableOfContentsRef.current.contains(target) &&
+        !buttonRef.current.contains(target)
+      ) {
+        handleToggleList()
+      }
+    }
+
+    // Add event listener with a small delay to prevent immediate closing
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('mousedown', handleClickOutside)
+    }, 100)
+
+    return () => {
+      clearTimeout(timeoutId)
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showList])
+
   function handleToggleList() {
     setShowList((prev) => !prev)
     const navDock = document.getElementById('nav-dock')
@@ -79,6 +110,7 @@ export default function NewTableOfContent({ headings, title, tags }: Props) {
     <>
       <Portal container={upperContainer}>
         <div
+          ref={tableOfContentsRef}
           style={{
             height: Math.min(MAX_HEIGHT, headings.length * 34),
             transitionTimingFunction: 'cubic-bezier(0.25, 0.1, 0.25, 1)'
@@ -92,16 +124,6 @@ export default function NewTableOfContent({ headings, title, tags }: Props) {
         >
           <div className='h-full p-2'>
             <div className='scrollbar-hide h-full rounded-3xl bg-[#141517]'>
-              <div className='max-w-[340px] px-4 pt-3'>
-                <div className='space-x-1.5 font-mono text-xs text-zinc-500'>
-                  {tags.map((tag) => (
-                    <span>{tag}</span>
-                  ))}
-                </div>
-                <p className='font-heading mt-2 text-xl font-semibold leading-tight text-zinc-100'>
-                  {title}
-                </p>
-              </div>
               <HeadingsList headings={headings} />
             </div>
           </div>
@@ -109,6 +131,7 @@ export default function NewTableOfContent({ headings, title, tags }: Props) {
       </Portal>
       <Portal container={leadingContainer}>
         <ButtonWrapper
+          ref={buttonRef}
           type='button'
           onClick={handleToggleList}
           onMouseEnter={() => iconRef.current?.startAnimation()}
@@ -128,10 +151,10 @@ export default function NewTableOfContent({ headings, title, tags }: Props) {
   )
 }
 
-function MotionButton({
-  children,
-  ...props
-}: Omit<HTMLMotionProps<'button'>, 'ref'>) {
+const MotionButton = React.forwardRef<
+  HTMLButtonElement,
+  Omit<HTMLMotionProps<'button'>, 'ref'>
+>(({ children, ...props }, forwardedRef) => {
   const [shouldUnmount, setShouldUnmount] = useState(false)
   const divRef = useRef<HTMLButtonElement>(null)
 
@@ -162,7 +185,14 @@ function MotionButton({
     <AnimatePresence>
       {!shouldUnmount && (
         <motion.button
-          ref={divRef}
+          ref={(node) => {
+            divRef.current = node
+            if (typeof forwardedRef === 'function') {
+              forwardedRef(node)
+            } else if (forwardedRef) {
+              forwardedRef.current = node
+            }
+          }}
           initial={{ width: 0, opacity: 0 }}
           animate={{
             width: 120,
@@ -180,6 +210,45 @@ function MotionButton({
         </motion.button>
       )}
     </AnimatePresence>
+  )
+})
+
+/**
+ * Heading component for the table of contents
+ */
+
+const DEPTH_STYLE = {
+  3: 'pl-3',
+  4: 'pl-6'
+}
+
+function HeadingsList({ headings }: { headings: MarkdownHeading[] }) {
+  return (
+    <ul
+      className={cn(
+        'space-y-3 p-4 text-[0.9rem] text-zinc-400',
+        'scrollbar-hide h-full overflow-y-scroll'
+      )}
+    >
+      {groupHeadings(headings).map((heading) => {
+        if (!Array.isArray(heading)) {
+          return <Heading key={heading.slug} {...heading} />
+        }
+
+        return (
+          <ul
+            className={cn(
+              'mt-2 space-y-2',
+              DEPTH_STYLE[heading[0].depth as keyof typeof DEPTH_STYLE]
+            )}
+          >
+            {heading.map((nestedHeading) => (
+              <Heading key={nestedHeading.slug} {...nestedHeading} />
+            ))}
+          </ul>
+        )
+      })}
+    </ul>
   )
 }
 
@@ -206,49 +275,5 @@ function Heading({ slug, text }: MarkdownHeading) {
         {text}
       </a>
     </li>
-  )
-}
-
-const DEPTH_STYLE = {
-  3: 'pl-2',
-  4: 'pl-4'
-}
-
-function NestedHeading({ headings }: { headings: MarkdownHeading[] }) {
-  return (
-    <ul
-      className={cn(
-        'mt-2 space-y-2',
-        DEPTH_STYLE[headings[0].depth as keyof typeof DEPTH_STYLE]
-      )}
-    >
-      {headings.map((heading) => (
-        <Heading key={heading.slug} {...heading} />
-      ))}
-    </ul>
-  )
-}
-
-function HeadingsList({ headings }: { headings: MarkdownHeading[] }) {
-  return (
-    <ul
-      className={cn(
-        'space-y-3 p-4 pb-32 text-[0.9rem] text-zinc-400',
-        'scrollbar-hide h-full overflow-y-scroll'
-      )}
-    >
-      {groupHeadings(headings).map((heading) => {
-        if (!Array.isArray(heading)) {
-          return <Heading key={heading.slug} {...heading} />
-        }
-
-        return (
-          <NestedHeading
-            key={`${heading[0].slug}-${heading[0].depth}`}
-            headings={heading}
-          />
-        )
-      })}
-    </ul>
   )
 }

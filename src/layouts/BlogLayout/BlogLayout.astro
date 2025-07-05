@@ -114,10 +114,6 @@ const {
         )
       }
     </article>
-
-    <!-- <aside class='w-60 shrink-0 space-y-8 max-lg:hidden'>
-      <TableOfContent headings={headings} className='sticky top-32' />
-    </aside> -->
   </section>
 
   <section class='mt-16'>
@@ -188,35 +184,3 @@ const {
     @apply mr-2.5 mt-[3px] inline-block size-[18px] align-text-top;
   }
 </style>
-
-<script>
-  const handleHeadingIntersection = () => {
-    const observerOptions: IntersectionObserverInit = {
-      root: null,
-      rootMargin: '0px 0px -85% 0px', // Adjust to make the top 20% of the viewport observe entries
-      threshold: 0 // Trigger as soon as they enter the viewport
-    }
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return
-
-        const id = entry.target.getAttribute('id')
-        const link = document.querySelector(`li > a[href="#${id}"]`)
-        const textStyle = 'text-zinc-300'
-
-        document
-          .querySelectorAll(`.${textStyle}`)
-          .forEach((item) => item.classList.remove(textStyle))
-
-        link?.classList.add(textStyle)
-      })
-    }, observerOptions)
-
-    document.querySelectorAll('h2[id], h3[id], h4[id]').forEach((heading) => {
-      observer.observe(heading)
-    })
-  }
-
-  document.addEventListener('astro:page-load', handleHeadingIntersection)
-</script>
