@@ -1,12 +1,12 @@
 import { Portal } from '@radix-ui/react-portal'
 import React, { useEffect, useRef, useState, type ComponentRef } from 'react'
 import { AnimatePresence, motion, type HTMLMotionProps } from 'framer-motion'
-import { cn, waitForElementById } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import type { MarkdownHeading } from 'astro'
-import './NewTableOfContent.css'
 import { ChevronsUpDownIcon } from '../icons/AnimatedChevronsUpDown'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useWaitForElement } from '../hooks/useWaitForElement'
+import './NewTableOfContent.css'
 
 interface Props {
   title: string
@@ -307,7 +307,7 @@ function handleClick(e: React.MouseEvent<HTMLAnchorElement>, slug: string) {
 
 function Heading({ slug, text }: MarkdownHeading) {
   return (
-    <li>
+    <li className='heading-item text-zinc-500'>
       <a
         className='cursor-pointer hover:text-zinc-200'
         href={`#${slug}`}
