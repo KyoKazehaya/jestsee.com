@@ -16,6 +16,13 @@ interface Props {
 
 const MAX_HEIGHT = 256
 
+function scrollToHeading() {
+  document.querySelector('.current-heading')?.scrollIntoView({
+    behavior: 'smooth',
+    block: 'center'
+  })
+}
+
 export default function NewTableOfContent({ headings, title, tags }: Props) {
   const leadingContainer = useWaitForElement('bottom-nav-bar-leading')
   const upperContainer = useWaitForElement('bottom-nav-bar-upper')
@@ -64,6 +71,8 @@ export default function NewTableOfContent({ headings, title, tags }: Props) {
         document
           .querySelector(`li > a[href="#${activeId}"]`)
           ?.classList.add('current-heading')
+
+        scrollToHeading()
       },
       {
         rootMargin: '-10% 0px -85% 0px',
@@ -81,6 +90,8 @@ export default function NewTableOfContent({ headings, title, tags }: Props) {
   // Click outside to close
   useEffect(() => {
     if (!showList) return
+
+    scrollToHeading()
 
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node
