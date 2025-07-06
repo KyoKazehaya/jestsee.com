@@ -1,10 +1,11 @@
+import { useAstroEffect } from '@/hooks/useAstroEffect'
 import { Arrow } from '@radix-ui/react-tooltip'
 import React from 'react'
 
 const TooltipArrowPrimitive = () => {
   const arrowRef = React.useRef<SVGSVGElement>(null)
 
-  React.useEffect(() => {
+  useAstroEffect(() => {
     const spanArrow = arrowRef.current?.parentElement
 
     const observer = new MutationObserver(() => {

@@ -7,6 +7,7 @@ import { ChevronsUpDownIcon } from '../icons/AnimatedChevronsUpDown'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useWaitForElement } from '../hooks/useWaitForElement'
 import './NewTableOfContent.css'
+import { useAstroEffect } from '@/hooks/useAstroEffect'
 
 interface Props {
   title: string
@@ -52,7 +53,7 @@ export default function NewTableOfContent({ headings, title, tags }: Props) {
     handleToggleList()
   })
 
-  useEffect(() => {
+  useAstroEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         const intersecting = entries
@@ -274,6 +275,7 @@ function HeadingsList({ headings }: { headings: MarkdownHeading[] }) {
 
         return (
           <ul
+            key={`key-${heading[0].slug}`}
             className={cn(
               'mt-2 space-y-2',
               DEPTH_STYLE[heading[0].depth as keyof typeof DEPTH_STYLE]

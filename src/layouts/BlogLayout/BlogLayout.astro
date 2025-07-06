@@ -8,7 +8,6 @@ import { ArrowOutward } from '@/components/icons/ArrowOutward'
 import Image from '@/components/Image'
 import Link, { LinkArticle } from '@/components/Link'
 import SEO from '@/components/SEO.astro'
-import ScrollProgressBar from '@/components/ui/scroll-progress-bar'
 import { BASE_URL } from '@/lib/baseUrl'
 import { formatDateByTimeZone } from '@/lib/utils'
 
@@ -49,8 +48,6 @@ const {
     tags={tags}
   />
   <slot name='head' slot='head' />
-  <!-- <TopOverlay /> -->
-  <ScrollProgressBar targetId='article' client:only='react' strokeSize={2} />
 
   <Image
     src={heroImage}
