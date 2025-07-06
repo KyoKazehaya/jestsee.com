@@ -26,3 +26,20 @@
   content: 'Current';
   @apply ml-2 rounded-full bg-emerald-950/75 py-1 pl-2 pr-2.5 text-xs leading-none text-emerald-400;
 }
+
+.gradient-clipped {
+  mask: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 15%,
+    black 85%,
+    transparent 100%
+  );
+  -webkit-mask: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 15%,
+    black 85%,
+    transparent 100%
+  );
+}

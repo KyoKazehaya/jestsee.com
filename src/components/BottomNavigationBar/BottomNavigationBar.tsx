@@ -94,7 +94,7 @@ const BottomNavigationBar = () => {
             tip?.style.removeProperty('--show')
           }}
           className={cn(
-            'max-w-[384px]',
+            'mx-auto max-w-[384px] max-[384px]:max-w-[90%]',
             'overflow-hidden rounded-[32px]',
             'border border-shark-950',
             'bg-black/75'

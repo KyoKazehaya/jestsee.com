@@ -19,7 +19,8 @@ const MAX_HEIGHT = 256
 function scrollToHeading() {
   document.querySelector('.current-heading')?.scrollIntoView({
     behavior: 'smooth',
-    block: 'center'
+    block: 'center',
+    inline: 'center'
   })
 }
 
@@ -91,7 +92,9 @@ export default function NewTableOfContent({ headings, title, tags }: Props) {
   useEffect(() => {
     if (!showList) return
 
-    scrollToHeading()
+    const scrollTimeOutId = setTimeout(() => {
+      scrollToHeading()
+    }, 300)
 
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node
@@ -114,6 +117,7 @@ export default function NewTableOfContent({ headings, title, tags }: Props) {
 
     return () => {
       clearTimeout(timeoutId)
+      clearTimeout(scrollTimeOutId)
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [showList])
@@ -155,7 +159,7 @@ export default function NewTableOfContent({ headings, title, tags }: Props) {
           )}
         >
           <div className='h-full p-2'>
-            <div className='scrollbar-hide h-full rounded-3xl bg-[#141517]'>
+            <div className='scrollbar-hide h-full rounded-3xl bg-[#141517]/80 backdrop-blur-md'>
               <HeadingsList headings={headings} />
             </div>
           </div>
@@ -166,8 +170,8 @@ export default function NewTableOfContent({ headings, title, tags }: Props) {
           ref={buttonRef}
           type='button'
           onClick={handleToggleList}
-          onMouseEnter={() => iconRef.current?.startAnimation()}
-          onMouseLeave={() => iconRef.current?.stopAnimation()}
+          onMouseEnter={iconRef.current?.startAnimation}
+          onMouseLeave={iconRef.current?.stopAnimation}
           className={cn(
             'group flex items-center gap-2',
             'rounded-full px-3 py-2.5',
@@ -258,8 +262,9 @@ function HeadingsList({ headings }: { headings: MarkdownHeading[] }) {
   return (
     <ul
       className={cn(
-        'space-y-3 p-4 text-[0.9rem] text-zinc-400',
-        'scrollbar-hide h-full overflow-y-scroll'
+        'space-y-3 px-4 py-6 text-[0.9rem] text-zinc-400',
+        'scrollbar-hide h-full overflow-y-scroll',
+        'gradient-clipped'
       )}
     >
       {groupHeadings(headings).map((heading) => {
