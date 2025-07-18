@@ -8,6 +8,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { useWaitForElement } from '../hooks/useWaitForElement'
 import './NewTableOfContent.css'
 import { useAstroEffect } from '@/hooks/useAstroEffect'
+import CircularScrollProgress from '@/layouts/BlogLayout/CircularScrollProgress'
 
 interface Props {
   title: string
@@ -126,14 +127,10 @@ export default function NewTableOfContent({ headings, title, tags }: Props) {
   function handleToggleList() {
     setShowList((prev) => !prev)
     const navDock = document.getElementById('nav-dock')
-    const navContainer = document
-      .getElementById('nav-container')
-      ?.getElementsByTagName('nav')[0]
 
     if (showList) {
       navDock?.classList.remove('!p-3')
       navDock?.classList.add('delay-200')
-      navContainer?.classList.remove('!bg-black')
 
       setTimeout(() => {
         document.body.classList.remove('disable-scroll')
@@ -144,7 +141,6 @@ export default function NewTableOfContent({ headings, title, tags }: Props) {
 
     navDock?.classList.add('!p-3')
     navDock?.classList.remove('delay-200')
-    navContainer?.classList.add('!bg-black')
     document.body.classList.add('disable-scroll')
   }
 
@@ -154,7 +150,7 @@ export default function NewTableOfContent({ headings, title, tags }: Props) {
         <div
           ref={tableOfContentsRef}
           style={{
-            height: Math.min(MAX_HEIGHT, headings.length * 34),
+            height: Math.min(MAX_HEIGHT, headings.length * 48),
             transitionTimingFunction: 'cubic-bezier(0.25, 0.1, 0.25, 1)'
           }}
           className={cn(
@@ -165,10 +161,14 @@ export default function NewTableOfContent({ headings, title, tags }: Props) {
             'transition-all duration-300'
           )}
         >
-          <div className='h-full px-2'>
-            <div className='scrollbar-hide h-full rounded-3xl backdrop-blur-md'>
-              <HeadingsList headings={headings} />
-            </div>
+          <div
+            className={cn(
+              'scrollbar-hide h-full rounded-3xl backdrop-blur-md',
+              'transition-all duration-1000',
+              'h-full max-w-[366px] px-2 max-xs:max-w-[300px]'
+            )}
+          >
+            <HeadingsList headings={headings} />
           </div>
         </div>
       </Portal>
@@ -181,13 +181,18 @@ export default function NewTableOfContent({ headings, title, tags }: Props) {
           onMouseLeave={iconRef.current?.stopAnimation}
           className={cn(
             'group flex items-center gap-2',
-            'rounded-full px-3 py-2.5',
+            'rounded-full px-3 py-2.5 max-xs:mr-2 max-xs:p-0',
             'font-heading text-sm text-emerald-400',
             'bg-emerald-950/60'
           )}
         >
-          <span className='whitespace-nowrap'>On this page</span>
-          <ChevronsUpDownIcon ref={iconRef} size={12} />
+          <CircularScrollProgress className='xs:hidden' />
+          <span className='whitespace-nowrap max-xs:hidden'>On this page</span>
+          <ChevronsUpDownIcon
+            className='max-xs:hidden'
+            ref={iconRef}
+            size={12}
+          />
         </ButtonWrapper>
       </Portal>
     </>
