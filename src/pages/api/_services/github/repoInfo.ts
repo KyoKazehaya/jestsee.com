@@ -15,7 +15,7 @@ const getLastUpdatedTime = async (
     requestHeaders: {
       Authorization: `Bearer ${GITHUB_ACCESS_TOKEN}`
     }
-  })
+  }).catch((error) => console.error('>>> 🔴 error', error))
 
   return (response as any).repository
 }

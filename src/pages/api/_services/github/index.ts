@@ -33,6 +33,8 @@ const github = new Hono()
     async (c) => {
       const { owner, repository } = c.req.valid('param')
 
+      console.log('>>> 🟢 here', { owner, repository })
+
       return c.json(await getLastUpdatedTime(owner, repository), 200, {
         'Cache-Control': 's-maxage=3600, stale-while-revalidate=600'
       })
