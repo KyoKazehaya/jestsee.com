@@ -126,10 +126,14 @@ export default function NewTableOfContent({ headings, title, tags }: Props) {
   function handleToggleList() {
     setShowList((prev) => !prev)
     const navDock = document.getElementById('nav-dock')
+    const navContainer = document
+      .getElementById('nav-container')
+      ?.getElementsByTagName('nav')[0]
 
     if (showList) {
       navDock?.classList.remove('!p-3')
       navDock?.classList.add('delay-200')
+      navContainer?.classList.remove('!bg-black')
 
       setTimeout(() => {
         document.body.classList.remove('disable-scroll')
@@ -140,6 +144,7 @@ export default function NewTableOfContent({ headings, title, tags }: Props) {
 
     navDock?.classList.add('!p-3')
     navDock?.classList.remove('delay-200')
+    navContainer?.classList.add('!bg-black')
     document.body.classList.add('disable-scroll')
   }
 
@@ -154,13 +159,14 @@ export default function NewTableOfContent({ headings, title, tags }: Props) {
           }}
           className={cn(
             { '!h-0': !showList },
+            { '-mb-3': showList },
             'w-full overflow-hidden',
             'table-of-content',
             'transition-all duration-300'
           )}
         >
-          <div className='h-full p-2'>
-            <div className='scrollbar-hide h-full rounded-3xl bg-[#141517]/80 backdrop-blur-md'>
+          <div className='h-full px-2'>
+            <div className='scrollbar-hide h-full rounded-3xl backdrop-blur-md'>
               <HeadingsList headings={headings} />
             </div>
           </div>
