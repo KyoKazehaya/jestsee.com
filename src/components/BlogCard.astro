@@ -27,10 +27,10 @@ const { minutes } = calculateReadingTime(body!)
     alt={title}
     align='center'
     class='aspect-[2] transition-all duration-800 group-hover:scale-105 md:aspect-[1.5]'
-    wrapperProps={{ class: 'rounded-lg overflow-clip md:max-w-[260px]' }}
+    wrapperProps={{ class: 'rounded-lg overflow-clip md:max-w-[216px]' }}
     inferSize
   />
-  <div class='flex w-full flex-col justify-between lg:py-2'>
+  <div class='flex w-full flex-col justify-between'>
     <div class='font-light'>
       <BlogInfo pubDate={pubDate} readingTime={minutes} />
       <p

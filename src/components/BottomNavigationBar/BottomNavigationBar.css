@@ -1,36 +1,50 @@
 :root {
   --speed: 0.25;
   --blur: 4;
-  --ease-in: linear(0 0%,
-      0.0039 6.25%,
-      0.0156 12.5%,
-      0.0352 18.75%,
-      0.0625 25%,
-      0.0977 31.25%,
-      0.1407 37.5%,
-      0.1914 43.74%,
-      0.2499 49.99%,
-      0.3164 56.25%,
-      0.3906 62.5%,
-      0.5625 75%,
-      0.7656 87.5%,
-      1 100%);
+  --ease-in: linear(
+    0 0%,
+    0.0039 6.25%,
+    0.0156 12.5%,
+    0.0352 18.75%,
+    0.0625 25%,
+    0.0977 31.25%,
+    0.1407 37.5%,
+    0.1914 43.74%,
+    0.2499 49.99%,
+    0.3164 56.25%,
+    0.3906 62.5%,
+    0.5625 75%,
+    0.7656 87.5%,
+    1 100%
+  );
   --ease: ease;
   --nav: 'nav';
 }
 
 .nav {
-  anchor-name: --my-nav;
-  left: 50%;
-  translate: 0% 0;
-  margin-left: calc(var(--width) * -0.5px);
-
-  --width: 258;
   --bottom-nav-bar-offset: 32px;
+
+  anchor-name: --my-nav;
   view-transition-name: --nav;
 }
 
 ::view-transition-group(--nav) {
+  z-index: 10;
+}
+
+::view-transition-group(home) {
+  z-index: 10;
+}
+::view-transition-group(projects) {
+  z-index: 10;
+}
+::view-transition-group(blog) {
+  z-index: 10;
+}
+::view-transition-group(about) {
+  z-index: 10;
+}
+::view-transition-group(bookmarks) {
   z-index: 10;
 }
 
@@ -42,6 +56,10 @@
   .tip {
     display: none;
   }
+}
+
+body.disable-scroll .tip {
+  display: none;
 }
 
 .tip {
@@ -89,7 +107,7 @@
 }
 
 .tip {
-  translate: calc(-125% + (var(--tip-x) * 1px));
+  translate: calc(-125% + ((var(--tip-x) - var(--tip-x-offset, 0)) * 1px));
   bottom: 100px;
 }
 
@@ -97,10 +115,9 @@
   .tip {
     left: anchor(left);
     bottom: calc(anchor(top) + 1rem);
-    translate: calc(-50% + (var(--tip-x) * 1px));
+    translate: calc(-25% + (var(--tip-x) * 1px));
     /* translate: calc(-50% + (var(--tip-x) * 1px)) calc(var(--tip-y) * 1px + -50%); */
   }
-
 }
 
 /* :has() hovering stuff */
@@ -165,7 +182,8 @@
 }
 
 .tip__track {
-  transition: translate calc(var(--speed) * 1s) calc(var(--speed) * 1s) var(--ease);
+  transition: translate calc(var(--speed) * 1s) calc(var(--speed) * 1s)
+    var(--ease);
 }
 
 .tip__track div {
@@ -176,7 +194,8 @@
     opacity calc(var(--speed) * 1s) var(--ease);
 }
 
-:root:has(.nav ul:is(:hover)) {
+/* exclude first child (leading) */
+:root:has(.nav ul > li:not(:first-child):hover) {
   .tip {
     --show: 1;
     filter: blur(0);

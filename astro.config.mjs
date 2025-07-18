@@ -25,7 +25,8 @@ export default defineConfig({
   markdown: {
     shikiConfig: {
       theme: 'poimandres'
-    }
+    },
+    syntaxHighlight: 'shiki'
   },
 
   prefetch: {

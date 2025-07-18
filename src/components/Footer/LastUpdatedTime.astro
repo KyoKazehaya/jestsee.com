@@ -14,7 +14,7 @@ const response = await client.api.github['repo-info'][':owner'][
     repository: 'jestsee.com'
   }
 })
-const data = response.status === 200 ? await response.json() : null
+const data = response?.status === 200 ? await response.json() : null
 
 if (!data) return
 

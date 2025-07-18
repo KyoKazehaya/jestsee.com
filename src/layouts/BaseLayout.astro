@@ -23,7 +23,7 @@ const { class: className } = Astro.props
       <SEO />
     </slot>
   </head>
-  <body class='flex min-h-screen flex-col items-center bg-zinc-950 text-white'>
+  <body class='flex min-h-dvh flex-col items-center bg-zinc-950 text-white'>
     <slot name='decorator' />
     <main
       class:list={[
@@ -46,6 +46,8 @@ const { class: className } = Astro.props
   }
 
   document.addEventListener('astro:page-load', () => {
+    document.getElementById('nav-dock')?.classList.remove('!p-3')
+
     // handle hash on initial load
     if (window.location.hash) {
       window.scrollTo({ top: 0, behavior: 'instant' })

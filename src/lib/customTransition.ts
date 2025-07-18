@@ -20,10 +20,10 @@ const exitAnimation: TransitionAnimation = {
   duration: getDuration(duration)
 }
 
-const getAnimationPair = (delay?: number): TransitionAnimationPair => {
+const getAnimationPair = (delay: number = 0): TransitionAnimationPair => {
   return {
-    new: { ...enterAnimation, delay: getDuration(duration + (delay ?? 0)) },
-    old: { ...exitAnimation, delay: getDuration(delay ?? 0) }
+    new: { ...enterAnimation, delay: getDuration(duration + delay) },
+    old: { ...exitAnimation, delay: getDuration(delay) }
   }
 }
 

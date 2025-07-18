@@ -8,12 +8,11 @@ import { ArrowOutward } from '@/components/icons/ArrowOutward'
 import Image from '@/components/Image'
 import Link, { LinkArticle } from '@/components/Link'
 import SEO from '@/components/SEO.astro'
-import TableOfContent from '@/components/TableOfContent'
-import ScrollProgressBar from '@/components/ui/scroll-progress-bar'
 import { BASE_URL } from '@/lib/baseUrl'
 import { formatDateByTimeZone } from '@/lib/utils'
 
 import BaseLayout from '../BaseLayout.astro'
+import NewTableOfContent from '@/components/NewTableOfContent'
 
 interface Props extends InferEntrySchema<'blog'> {
   headings: MarkdownHeading[]
@@ -34,7 +33,7 @@ const {
 } = Astro.props
 ---
 
-<BaseLayout class='!max-w-[1024px]'>
+<BaseLayout class='!max-w-[840px]'>
   <SEO
     title={title}
     description={description}
@@ -42,20 +41,20 @@ const {
     type='article'
     slot='seo'
   />
-  <slot name='head' slot='head' />
-  <!-- <TopOverlay /> -->
-  <ScrollProgressBar
-    className='bg-[var(--projectAccentColor)]'
-    targetId='article'
+  <NewTableOfContent
     client:only='react'
+    headings={headings}
+    title={title}
+    tags={tags}
   />
+  <slot name='head' slot='head' />
 
   <Image
     src={heroImage}
     alt={title}
     title={title}
     align='center'
-    wrapperProps={{ class: 'max-w-[928px] lg:mt-12 lg:rounded-md' }}
+    wrapperProps={{ class: 'max-w-[756px] lg:mt-12 lg:rounded-md' }}
     class='aspect-[2.5] w-full xs:aspect-[3.25]'
     inferSize
     ambientMode
@@ -112,10 +111,6 @@ const {
         )
       }
     </article>
-
-    <aside class='w-60 shrink-0 space-y-8 max-lg:hidden'>
-      <TableOfContent headings={headings} className='sticky top-32' />
-    </aside>
   </section>
 
   <section class='mt-16'>
@@ -186,35 +181,3 @@ const {
     @apply mr-2.5 mt-[3px] inline-block size-[18px] align-text-top;
   }
 </style>
-
-<script>
-  const handleHeadingIntersection = () => {
-    const observerOptions: IntersectionObserverInit = {
-      root: null,
-      rootMargin: '0px 0px -85% 0px', // Adjust to make the top 20% of the viewport observe entries
-      threshold: 0 // Trigger as soon as they enter the viewport
-    }
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return
-
-        const id = entry.target.getAttribute('id')
-        const link = document.querySelector(`li > a[href="#${id}"]`)
-        const textStyle = 'text-zinc-300'
-
-        document
-          .querySelectorAll(`.${textStyle}`)
-          .forEach((item) => item.classList.remove(textStyle))
-
-        link?.classList.add(textStyle)
-      })
-    }, observerOptions)
-
-    document.querySelectorAll('h2[id], h3[id], h4[id]').forEach((heading) => {
-      observer.observe(heading)
-    })
-  }
-
-  document.addEventListener('astro:page-load', handleHeadingIntersection)
-</script>

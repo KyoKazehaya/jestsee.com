@@ -17,29 +17,34 @@ export const bottomNavigationItems = [
   {
     name: 'Hi 👋',
     icon: HandWaving,
-    href: '/'
+    href: '/',
+    viewTransitionName: 'home'
   },
   {
     name: 'Projects',
     icon: Briefcase,
-    href: '/projects'
+    href: '/projects',
+    viewTransitionName: 'projects'
   },
   {
     name: 'Blog',
     icon: ChatTeardropDots,
-    href: '/blog'
+    href: '/blog',
+    viewTransitionName: 'blog'
   },
   {
     name: 'About',
     icon: HandPalm,
-    href: '/about'
+    href: '/about',
+    viewTransitionName: 'about'
   },
   {
     name: 'Bookmarks',
     icon: Bookmarks,
-    href: '/bookmarks'
+    href: '/bookmarks',
+    viewTransitionName: 'bookmarks'
   }
-]
+] as const
 
 const BottomNavigationBar = () => {
   const [currentPath, setCurrentPath] = useState('')
@@ -76,34 +81,49 @@ const BottomNavigationBar = () => {
 
   return (
     <>
-      <nav
+      <div
+        id='nav-container'
         ref={navRef}
-        onPointerMove={() => {
-          // remove the css variable which force tooltip to be hidden
-          const tip = document.querySelector<HTMLDivElement>('.tip')
-          tip?.style.removeProperty('--show')
-        }}
         className={cn('nav', 'fixed z-10')}
         style={{ bottom: 'var(--bottom-nav-bar-offset)' }}
       >
-        <Dock direction='middle'>
-          {bottomNavigationItems.map(({ name, icon: Icon, href }) => (
-            <DockIcon
-              key={name}
-              href={href}
-              onClick={() => setCurrentPath(href)}
-              aria-label={name}
-            >
-              <Icon className='size-6' />
-              {firstSegment === href && (
-                <div className='absolute bottom-2 size-1 rounded-full bg-emerald-300'></div>
-              )}
-            </DockIcon>
-          ))}
-        </Dock>
-      </nav>
+        <nav
+          onPointerMove={() => {
+            // remove the css variable which force tooltip to be hidden
+            const tip = document.querySelector<HTMLDivElement>('.tip')
+            tip?.style.removeProperty('--show')
+          }}
+          className={cn(
+            'mx-auto overflow-hidden rounded-[32px]',
+            'border border-shark-950',
+            'w-fit bg-black transition-all duration-300'
+          )}
+        >
+          <div id='bottom-nav-bar-upper' className='w-full'></div>
+          <Dock>
+            <li id='bottom-nav-bar-leading'></li>
+            {bottomNavigationItems.map(
+              ({ name, icon: Icon, href, ...item }) => (
+                <DockIcon
+                  key={name}
+                  name={item.viewTransitionName}
+                  href={href}
+                  onClick={() => setCurrentPath(href)}
+                  aria-label={name}
+                >
+                  <Icon className='size-5' />
+                  {firstSegment === href && (
+                    <div className='absolute bottom-[3px] size-[3.5px] rounded-full bg-emerald-300'></div>
+                  )}
+                </DockIcon>
+              )
+            )}
+          </Dock>
+        </nav>
+      </div>
       <div className='tip' aria-hidden='true'>
         <div className='tip__track'>
+          <div />
           {bottomNavigationItems.map(({ name }) => (
             <div key={name}>{name}</div>
           ))}

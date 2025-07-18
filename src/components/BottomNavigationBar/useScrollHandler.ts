@@ -9,7 +9,18 @@ const useScrollHandler = (navRef: React.RefObject<HTMLDivElement | null>) => {
   const previousScrollY = useRef(0)
 
   const handleScroll = () => {
+    if (document.body.classList.contains('disable-scroll')) {
+      // Update previousScrollY to current position to prevent jumps when re-enabled
+      previousScrollY.current = window.scrollY
+      return
+    }
     if (!navRef.current) return
+
+    // Sync with external changes to bottom position
+    const currentBottom = parseInt(navRef.current.style.bottom || '0', 10)
+    if (Math.abs(currentBottom - navBottom.current) > 1) {
+      navBottom.current = currentBottom
+    }
 
     const currentScrollY = window.scrollY
     const deltaScroll = currentScrollY - previousScrollY.current
@@ -51,7 +62,7 @@ const useScrollHandler = (navRef: React.RefObject<HTMLDivElement | null>) => {
     offset.current = bottomNavBarOffset
   }
 
-  return { handleScroll, navRef, setInitialPosition }
+  return { handleScroll, setInitialPosition }
 }
 
 export default useScrollHandler
